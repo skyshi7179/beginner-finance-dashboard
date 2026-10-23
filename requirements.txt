@@ -1,0 +1,9 @@
+streamlit==1.66.0
+akshare
+pandas
+requests
+mini-racer
+numpy
+plotly
+pytest
+keyring

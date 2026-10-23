@@ -1,0 +1,82 @@
+<!doctype html><html><body><script>
+(() => {
+  const w = window.parent, d = w.document;
+  if (d.getElementById('novice-appearance')) return;
+  const css = d.createElement('style');
+  css.textContent = `
+  #novice-appearance {position:fixed;right:20px;bottom:22px;z-index:10000;font:14px -apple-system,sans-serif;}
+  #novice-appearance button {padding:10px 14px;border:1px solid #64748b;border-radius:10px;cursor:pointer;background:inherit;color:inherit;}
+  #novice-theme-panel {padding:10px;margin-bottom:8px;border:1px solid #64748b;border-radius:12px;box-shadow:0 4px 18px #0003;display:none;}
+  #novice-theme-panel.open {display:grid;gap:6px;}
+  #novice-theme-panel button[aria-pressed=true] {outline:2px solid #d9a930;}
+  #novice-theme-error {max-width:240px;font-size:12px;}
+  body.novice-theme-applying [data-testid=stMainMenuPopover] {visibility:hidden;}
+  [class*=st-key-chart_card_] {transition:box-shadow .16s,border-color .16s; margin-bottom:18px;}
+  [class*=st-key-chart_card_]:hover {border-color:#d0a437!important;box-shadow:0 0 0 1px #d0a43755;}
+  @media(max-width:700px){#novice-appearance{right:10px;bottom:12px;}}
+  `;
+  d.head.appendChild(css);
+  const box=d.createElement('aside');box.id='novice-appearance';box.setAttribute('aria-label','外观切换');
+  box.innerHTML='<div id="novice-theme-panel" role="group" aria-label="选择外观"><button data-mode="Light">☀ 浅色</button><button data-mode="Dark">☾ 深色</button><button data-mode="System">◐ 跟随系统</button><span id="novice-theme-error" role="status"></span></div><button id="novice-theme-toggle" aria-expanded="false">◐ 外观</button>';
+  d.body.appendChild(box);
+  const panel=box.querySelector('#novice-theme-panel'), toggle=box.querySelector('#novice-theme-toggle');
+  toggle.onclick=()=>{panel.classList.toggle('open');toggle.setAttribute('aria-expanded',panel.classList.contains('open'));};
+  d.addEventListener('keydown', e=>{if(e.key==='Escape'){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');}});
+  const storageKey='novice-appearance-v1';
+  let busy=false, mode='System';
+  try {mode=w.localStorage.getItem(storageKey)||'System';}catch(e){}
+  if(!['Light','Dark','System'].includes(mode))mode='System';
+  const pause=ms=>new Promise(resolve=>w.setTimeout(resolve,ms));
+  function paint() {
+    const app=d.querySelector('[data-testid=stApp]');
+    if(!app)return;
+    const style=w.getComputedStyle(app), bg=style.backgroundColor, fg=style.color;
+    for(const el of [box,panel]){
+      if(el.style.backgroundColor!==bg)el.style.backgroundColor=bg;
+      if(el.style.color!==fg)el.style.color=fg;
+    }
+    const native=d.querySelector('[data-testid=stThemeSwitcher] [aria-checked=true]');
+    const nativeMode=native?.getAttribute('data-testid')?.split('theme-')[1];
+    if(!busy&&['Light','Dark','System'].includes(nativeMode)&&nativeMode!==mode){
+      mode=nativeMode;try{w.localStorage.setItem(storageKey,mode);}catch(e){}
+    }
+    box.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
+    toggle.textContent={'Light':'☀ 浅色','Dark':'☾ 深色','System':'◐ 跟随系统'}[mode];
+  }
+  async function apply(next) {
+    if(busy)return;busy=true;
+    const error=box.querySelector('#novice-theme-error');error.textContent='';
+    let opened=false;
+    const main=d.querySelector('[data-testid=stMainMenuButton]');
+    const scroll=d.querySelector('[data-testid=stMain]'), top=scroll?.scrollTop, focus=d.activeElement;
+    try {
+      if(!main)throw Error('当前Streamlit界面未提供主题控制。');
+      d.body.classList.add('novice-theme-applying');
+      if(main.getAttribute('aria-expanded')!=='true'){main.click();opened=true;}
+      let target;
+      for(let i=0;i<30;i++){
+        target=d.querySelector('[data-testid="stMainMenuItem-theme-'+next+'"]');
+        if(target)break;await pause(40);
+      }
+      if(!target)throw Error('主题适配暂不可用，请用右上角原生Theme菜单。');
+      if(target.getAttribute('aria-checked')!=='true')target.click();
+      mode=next;
+      try{w.localStorage.setItem(storageKey,mode);}catch(e){}
+      await pause(100);paint();
+    }catch(e){error.textContent=e.message;}
+    finally{
+      if(opened&&main?.getAttribute('aria-expanded')==='true')main.click();
+      d.body.classList.remove('novice-theme-applying');
+      if(focus?.isConnected)focus.focus({preventScroll:true});
+      if(scroll&&top!==undefined)scroll.scrollTop=top;
+      busy=false;
+    }
+  }
+  box.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>apply(b.dataset.mode));
+  let queued=false;
+  new w.MutationObserver(()=>{
+    if(!queued){queued=true;w.setTimeout(()=>{queued=false;paint();},120);}
+  }).observe(d.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style','aria-checked']});
+  paint();apply(mode);
+})();
+</script></body></html>
