@@ -1,0 +1,18 @@
+阶段：首次发布准备版完整离线回归
+日期：2026-10-23
+环境：macOS Apple Silicon / Python 3.11.15 / 项目虚拟环境
+
+Command:
+PYTHONPYCACHEPREFIX=/private/tmp/provenance_pytest .venv/bin/python -m pytest -q -p no:cacheprovider --tb=short
+
+Result:
+........................................................................ [ 24%]
+........................................................................ [ 49%]
+........................................................................ [ 73%]
+........................................................................ [ 98%]
+.....                                                                    [100%]
+293 passed in 14.83s
+
+Failures: 0
+External market-data requests: NOT RUN
+External LLM requests: NOT RUN

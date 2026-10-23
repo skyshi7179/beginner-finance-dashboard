@@ -1,0 +1,44 @@
+[
+  {
+    "symbol": "159325",
+    "asset_type": "ETF",
+    "status": "LIVE_FETCHED",
+    "records": 472,
+    "message": "已获取并保存行情数据。",
+    "seconds": 0.59,
+    "actual_start": "2024-11-08",
+    "actual_end": "2026-10-21",
+    "volume_units": [
+      "份"
+    ],
+    "amount_units": [
+      "元"
+    ],
+    "actual_adjustment": [
+      "qfq"
+    ],
+    "amount_non_null": 472,
+    "second_status": "CACHE"
+  },
+  {
+    "symbol": "301660",
+    "asset_type": "A股",
+    "status": "LIVE_FETCHED",
+    "records": 7,
+    "message": "已获取并保存行情数据。 腾讯返回 7 条原始日线（day），未提供所选复权序列；已记录实际复权方式为不复权。",
+    "seconds": 0.35,
+    "actual_start": "2026-10-13",
+    "actual_end": "2026-10-21",
+    "volume_units": [
+      "股"
+    ],
+    "amount_units": [
+      "元"
+    ],
+    "actual_adjustment": [
+      "none"
+    ],
+    "amount_non_null": 7,
+    "second_status": "CACHE"
+  }
+]

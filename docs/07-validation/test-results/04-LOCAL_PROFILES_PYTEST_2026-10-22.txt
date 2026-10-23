@@ -1,0 +1,31 @@
+阶段：自定义策略与模型配置本地管理
+日期：2026-10-22
+
+环境：
+- macOS Apple Silicon
+- Python 3.11.15
+- keyring 25.7.0
+- 检测到后端：keyring.backends.macOS.Keyring
+
+新增专项测试：
+命令：.venv/bin/python -m pytest -q tests/test_local_persistence.py
+结果：9 passed in 1.47s
+
+完整回归：
+命令：.venv/bin/python -m pytest -q
+结果：535 passed in 52.88s
+
+浏览器检查：
+- 数据管理包含：本地行情、缓存回收区、自定义策略、模型与 API。
+- 模型与 API 包含：配置与测试、已保存配置、配置回收区。
+- GLM-4.7-Flash 与 GLM-5.3-Flash 预设均显示。
+- 未输入Key时测试、本地保存按钮禁用。
+- 控制台错误：0。
+
+网络边界：
+- 本轮自动化未读取、保存或调用用户真实API Key。
+- 模型调用均使用Mock；用户已单独报告glm-5.3-flash连接成功。
+
+最终安全回滚专项：
+命令：.venv/bin/python -m pytest -q tests/test_local_persistence.py tests/test_current_optimization.py tests/test_ai_report_page.py
+结果：29 passed in 6.49s

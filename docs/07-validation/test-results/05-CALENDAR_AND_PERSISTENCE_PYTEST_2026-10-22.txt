@@ -1,0 +1,9 @@
+Command: .venv/bin/python -m pytest -q
+Environment: macOS Apple Silicon, project virtual environment
+Result: 526 passed in 51.33s
+Failures: 0
+Network/LLM: not used; provider and model behavior covered with offline fixtures/mocks
+
+Final navigation/current optimization smoke command:
+.venv/bin/python -m pytest -q tests/test_navigation.py tests/test_current_optimization.py
+Result: 12 passed in 1.60s
